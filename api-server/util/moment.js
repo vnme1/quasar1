@@ -1,5 +1,5 @@
 const moment = require("moment");
-require("moment/locale/ko"); // 한국시간
+require("moment/locale/ko");
 moment.locale("ko");
 moment.updateLocale("ko", {
   longDateFormat: {
