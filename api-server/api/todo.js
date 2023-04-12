@@ -3,10 +3,10 @@ const todoController = require('./_controller/todoController');
 
 
 // create
-router.get('/', async (req,res)=>{
-  const result = await todoController.list(req);
+router.post("/", async (req, res) => {
+  const result = await todoController.create(req);
   res.json(result);
-})
+});
 
 
 // list
@@ -29,6 +29,7 @@ router.delete('/:id', async (req,res)=>{
 })
 
 // truncate, dummy insert
+//todocontroller 부분 이해하기
 router.post('/reset', async (req,res)=>{
     const result = await todoController.reset(req);
     res.json(result);

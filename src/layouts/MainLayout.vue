@@ -64,6 +64,13 @@ const linksList = [
     link: '/shop'
   },
 
+   {
+    title: 'My Play List',
+    caption: 'vue 중간과제',
+    icon: 'code',
+    link: '/music'
+  },
+
   {
     title: 'Vue 기초 문법',
     caption: 'Vue 핵심가이드',

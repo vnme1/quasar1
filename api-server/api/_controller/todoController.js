@@ -80,6 +80,8 @@ const todoController = {
   // list
   list: async (req) => {
     // 화살표함수는 es6문법 this접근안됨
+    // await 비동기 처리패턴
+
     const totalCount = await getTotal();
     const list = await getList(req);
     if (totalCount > 0 && list.length) {
@@ -121,7 +123,7 @@ const todoController = {
 
   //delete
   delete: async (req) => {
-    const { id } = req.params; // url /로 들어오는것
+    const { id } = req.params;
     if (isEmpty(id)) {
       return resData(STATUS.E100.result, STATUS.E100.resultDesc, moment().format('LT'));
     }
@@ -150,6 +152,39 @@ const todoController = {
     }
     return rows;
   },
+
+  //reset 하 다시 집가서 보기
+  reset: async (req) => {
+
+    const { title, done } = req.body;
+    if (isEmpty(title)|| isEmpty(done)) {
+      return resData(STATUS.E100.result, STATUS.E100.resultDesc, moment().format('LT'));
+    }
+    const cnt = await getSelectOne(title);
+    try {
+      if (!cnt) {
+        return resData(
+          STATUS.E100.result,
+          STATUS.E100.resultDesc,
+          moment().format('LT')
+        );
+      }
+      const query = `DELETE FROM ${TABLE.TODO} WHERE title = ?;`;
+      const values = [title, done, len];
+      const [rows] = await db.execute(query, values);
+      if (rows.affectedRows == 1) {
+        return resData(
+          STATUS.S200.result,
+          STATUS.S200.resultDesc,
+          moment().format('LT')
+        );
+      }
+    } catch (e) {
+      console.log(e.message);
+      return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+    }
+    return rows;
+  }
 
 
 };

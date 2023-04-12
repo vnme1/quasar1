@@ -17,7 +17,10 @@ const routes = [
     component: () => import('pages/ErrorNotFound.vue')
   },
     //추가
-  { path: '/shop', component: () => import('pages/ShoppingList.vue') }
+  { path: '/shop', component: () => import('pages/ShoppingList.vue') },
+
+  //내 api
+  { path: '/music', component: () => import('pages/MyMusic.vue') }
 
 
 ]
