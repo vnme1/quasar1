@@ -72,6 +72,13 @@ const linksList = [
   },
 
   {
+    title: 'todo',
+    caption: 'vue + store 실습',
+    icon: 'home',
+    link: '/todo'
+  },
+
+  {
     title: 'Vue 기초 문법',
     caption: 'Vue 핵심가이드',
     icon: 'school',
