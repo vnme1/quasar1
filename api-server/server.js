@@ -20,6 +20,7 @@ app.use(express.urlencoded({extended : true }));
 const autoRoute = require('./autoRoute');
 autoRoute('/api',app);
 
+
 //server
 const webServer = http.createServer(app);
 webServer.listen(port,()=>{
