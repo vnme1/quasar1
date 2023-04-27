@@ -31,5 +31,10 @@ router.post('/reset', async (req,res)=>{
   res.json(result);
 })
 
+//여성만 출력
+router.get('/Y', async (req,res)=>{
+  const result = await studentController.ylist(req);
+  res.json(result);
+})
 
 module.exports = router;

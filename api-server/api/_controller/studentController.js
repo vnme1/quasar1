@@ -51,6 +51,22 @@ const getList = async (req) => {
   }
 };
 
+const getGList = async (req) => {
+  try {
+    const len = parseInt(req.query.len) || 10;
+
+    let gender = "Y";
+
+    const query = `SELECT * FROM ${TABLE.STUDENT} where gender = '${gender}' order by s_id desc limit 0, ${len}`;
+    const [rows] = await db.execute(query);
+    return rows;
+  } catch (e) {
+    console.log(e.message);
+    return resData(STATUS.E300.result, STATUS.E300.resultDesc, currentTime());
+  }
+};
+
+
 const studentController = {
   // create
   create: async (req) => {
@@ -149,6 +165,21 @@ const studentController = {
     return rows;
   },
 
+  //gender Y만 출력 (여성만 출력)
+  ylist: async (req) => {
+    const totalCount = await getTotal();
+    const ylist = await getGList(req);
+    if (totalCount > 0 && ylist.length) {
+      return resData(
+        STATUS.S200.result,
+        STATUS.S200.resultDesc,
+        moment().format('LT'),
+        { totalCount, ylist }
+      );
+    } else {
+      return resData(STATUS.S201.result, STATUS.S201.resultDesc, moment().format('LT'));
+    }
+  },
 
 };
 
