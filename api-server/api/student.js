@@ -14,13 +14,13 @@ router.get('/', async (req,res)=>{
 })
 
 // update
-router.put('/:id', async (req,res)=>{
+router.put('/:s_id', async (req,res)=>{
   const result = await studentController.update(req);
   res.json(result);
 })
 
 // delete
-router.delete('/:id', async (req,res)=>{
+router.delete('/:s_id', async (req,res)=>{
   const result = await studentController.delete(req);
   res.json(result);
 })
