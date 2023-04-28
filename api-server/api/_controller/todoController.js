@@ -16,6 +16,18 @@ const getTotal = async () => {
   }
 };
 
+const getReset = async () => {
+    try {
+      const query = `TRUNCATE FROM ${TABLE.TODO}`;
+      //const values = [title, done];
+      const [[{ cnt }]] = await db.execute(query);
+        return cnt;
+    } catch (e) {
+      console.log(e.message);
+      return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+    }
+};
+
 // row 존재유무
 const getSelectOne = async (id) => {
   // const getTotal = async function () {
@@ -148,6 +160,35 @@ const todoController = {
     }
     return rows;
   },
+
+  reset: async (req) => {
+    const { title, done } = req.body;
+    if (isEmpty(title) || isEmpty(done)) {
+      return resData(
+        STATUS.E100.result,
+         STATUS.E100.resultDesc,
+          moment().format('LT'),
+          { getReset }
+          );
+    }
+    try {
+      const query = `INSERT INTO todo (title, done) VALUES (?,?)`;
+      const values = [title, done];
+      const [rows] = await db.execute(query, values);
+      if (rows.affectedRows == 1) {
+        return resData(
+          STATUS.S200.result,
+          STATUS.S200.resultDesc,
+          moment().format('LT'),
+        );
+      }
+    } catch (e) {
+      console.log(e.message);
+      return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+    }
+
+  },
+
 
 
 };

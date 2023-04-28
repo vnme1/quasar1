@@ -66,6 +66,20 @@ const getGList = async (req) => {
   }
 };
 
+// row 존재유무
+const getSelectG = async (gender) => {
+  // const getTotal = async function () {
+  try {
+    const query = `SELECT COUNT(*) AS cnt FROM ${TABLE.STUDENT} WHERE gender=?`;
+    const values = [gender];
+    const [[{ cnt }]] = await db.execute(query, values);
+    return cnt;
+  } catch (e) {
+    console.log(e.message);
+    return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+  }
+};
+
 
 const studentController = {
   // create
@@ -165,6 +179,32 @@ const studentController = {
     return rows;
   },
 
+  reset: async (req) =>{
+
+    const { s_id, s_name, gender } = req.body
+    if (isEmpty(s_id) || isEmpty(s_name) || isEmpty(gender)) {
+      return resData(STATUS.E100.result, STATUS.E100.resultDesc, moment().format('LT'));
+    }
+    const query = `TRUNCATE FROM vue.STUDENT`;
+    const [rows] = await db.execute(query);
+
+    try {
+      if (rows.affectedRows == 1) {
+        return resData(
+          STATUS.S200.result,
+          STATUS.S200.resultDesc,
+          moment().format('LT')
+        );
+      }
+    }
+    catch (e) {
+      console.log(e.message);
+      return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+    }
+    return rows;
+
+  },
+
   //gender Y만 출력 (여성만 출력)
   ylist: async (req) => {
     const totalCount = await getTotal();
@@ -179,6 +219,38 @@ const studentController = {
     } else {
       return resData(STATUS.S201.result, STATUS.S201.resultDesc, moment().format('LT'));
     }
+  },
+
+  //gender 삭제
+  ydelete: async (req) => {
+    const { gender } = req.params; // url /로 들어오는것
+    if (isEmpty(gender)) {
+      return resData(STATUS.E100.result, STATUS.E100.resultDesc, moment().format('LT'));
+    }
+    const cnt = await getSelectG(gender);
+    try {
+      if (!cnt) {
+        return resData(
+          STATUS.E100.result,
+          STATUS.E100.resultDesc,
+          moment().format('LT')
+        );
+      }
+      const query = `DELETE FROM ${TABLE.STUDENT} WHERE gender = ?;`;
+      const values = [gender];
+      const [rows] = await db.execute(query, values);
+      if (rows.affectedRows == 1) {
+        return resData(
+          STATUS.S200.result,
+          STATUS.S200.resultDesc,
+          moment().format('LT')
+        );
+      }
+    } catch (e) {
+      console.log(e.message);
+      return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+    }
+    return rows;
   },
 
 };

@@ -28,9 +28,9 @@ router.delete('/:id', async (req,res)=>{
 })
 
 // truncate, dummy insert
-//router.post('/reset', async (req,res)=>{
-//    const result = await todoController.reset(req);
-//    res.json(result);
-//})
+router.post('/reset', async (req,res)=>{
+    const result = await todoController.reset(req);
+    res.json(result);
+})
 
 module.exports = router;

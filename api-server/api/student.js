@@ -32,8 +32,14 @@ router.post('/reset', async (req,res)=>{
 })
 
 //여성만 출력
-router.get('/Y', async (req,res)=>{
+router.get('/Girl', async (req,res)=>{
   const result = await studentController.ylist(req);
+  res.json(result);
+})
+
+// Gdelete
+router.delete('/:gender', async (req,res)=>{
+  const result = await studentController.delete(req);
   res.json(result);
 })
 
