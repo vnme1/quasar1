@@ -236,7 +236,7 @@ const studentController = {
           moment().format('LT')
         );
       }
-      const query = `DELETE FROM ${TABLE.STUDENT} WHERE gender = ?;`;
+      const query = `DELETE FROM ${TABLE.STUDENT} WHERE gender = ?`;
       const values = [gender];
       const [rows] = await db.execute(query, values);
       if (rows.affectedRows == 1) {

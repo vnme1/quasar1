@@ -1,44 +1,22 @@
 const db = require("../../plugins/mysql");
 const TABLE = require("../../util/TABLE");
 const STATUS = require("../../util/STATUS");
-const { resData, currentTime, isEmpty } = require("../../util/lib");
+const { resData, isEmpty } = require("../../util/lib");
 const moment = require("../../util/moment");
 
 //전체 row 갯수
 const getTotal = async () => {
   try {
-    const query = `SELECT COUNT(*) AS cnt FROM ${TABLE.TODO}`;
+    const query = `SELECT COUNT(*) AS cnt FROM ${TABLE.TODO} WHERE done='N'`;
     const [[{ cnt }]] = await db.execute(query);
     return cnt;
   } catch (e) {
     console.log(e.message);
-    return resData(STATUS.E300.result, STATUS.E300.resultDesc, currentTime());
-  }
-};
-
-const getReset = async () => {
-    try {
-      const query = `TRUNCATE FROM ${TABLE.TODO}`;
-      //const values = [title, done];
-      const [[{ cnt }]] = await db.execute(query);
-        return cnt;
-    } catch (e) {
-      console.log(e.message);
-      return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
-    }
-};
-
-// row 존재유무
-const getSelectOne = async (id) => {
-  // const getTotal = async function () {
-  try {
-    const query = `SELECT COUNT(*) AS cnt FROM ${TABLE.TODO} WHERE id=?`;
-    const values = [id];
-    const [[{ cnt }]] = await db.execute(query, values);
-    return cnt;
-  } catch (e) {
-    console.log(e.message);
-    return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+    return resData(
+      STATUS.E300.result,
+      STATUS.E300.resultDesc,
+      moment().format("LT")
+    );
   }
 };
 
@@ -52,56 +30,93 @@ const getList = async (req) => {
     let where = "";
     if (lastId) {
       // 0은 false
-      where = `WHERE id < ${lastId}`;
+      where = ` AND id < ${lastId}`;
     }
-    const query = `SELECT * FROM ${TABLE.TODO} ${where} order by id desc limit 0, ${len}`;
+    const query = `SELECT * FROM ${TABLE.TODO} WHERE done='N' ${where} order by id desc limit 0, ${len}`;
     const [rows] = await db.execute(query);
     return rows;
   } catch (e) {
     console.log(e.message);
-    return resData(STATUS.E300.result, STATUS.E300.resultDesc, currentTime());
+    return resData(
+      STATUS.E300.result,
+      STATUS.E300.resultDesc,
+      moment().format("LT")
+    );
+  }
+};
+
+// row 존재유무
+const getSelectOne = async (id) => {
+  // const getTotal = async function () {
+  try {
+    const query = `SELECT COUNT(*) AS cnt FROM ${TABLE.TODO} WHERE id=?`;
+    const values = [id];
+    const [[{ cnt }]] = await db.execute(query, values);
+    return cnt;
+  } catch (e) {
+    console.log(e.message);
+    return resData(
+      STATUS.E300.result,
+      STATUS.E300.resultDesc,
+      moment().format("LT")
+    );
   }
 };
 
 const todoController = {
+
   // create
   create: async (req) => {
-    const { title, done } = req.body;
-    if (isEmpty(title) || isEmpty(done)) {
-      return resData(STATUS.E100.result, STATUS.E100.resultDesc, moment().format('LT'));
+    const { title } = req.body;
+    //body check
+    if (isEmpty(title)) {
+      return resData(
+        STATUS.E100.result,
+        STATUS.E100.resultDesc,
+        moment().format("LT")
+      );
     }
 
     try {
-      const query = `INSERT INTO todo (title, done) VALUES (?,?)`;
-      const values = [title, done];
+      //insert
+      const query = `INSERT INTO ${TABLE.TODO} (title) VALUES (?)`;
+      const values = [title];
       const [rows] = await db.execute(query, values);
       if (rows.affectedRows == 1) {
         return resData(
           STATUS.S200.result,
           STATUS.S200.resultDesc,
-          moment().format('LT'),
+          moment().format("LT"),
+          { id: rows.insertId }
         );
       }
     } catch (e) {
       console.log(e.message);
-      return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+      return resData(
+        STATUS.E300.result,
+        STATUS.E300.resultDesc,
+        moment().format("LT")
+      );
     }
   },
 
   // list
   list: async (req) => {
-    // 화살표함수는 es6문법 this접근안됨
     const totalCount = await getTotal();
     const list = await getList(req);
     if (totalCount > 0 && list.length) {
       return resData(
         STATUS.S200.result,
         STATUS.S200.resultDesc,
-        moment().format('LT'),
+        moment().format("LT"),
         { totalCount, list }
       );
     } else {
-      return resData(STATUS.S201.result, STATUS.S201.resultDesc, moment().format('LT'));
+      return resData(
+        STATUS.S201.result,
+        STATUS.S201.resultDesc,
+        moment().format("LT")
+      );
     }
   },
 
@@ -110,7 +125,11 @@ const todoController = {
     const { id } = req.params; // url /로 들어오는것
     const { title, done } = req.body;
     if (isEmpty(id) || isEmpty(title) || isEmpty(done)) {
-      return resData(STATUS.E100.result, STATUS.E100.resultDesc, moment().format('LT'));
+      return resData(
+        STATUS.E100.result,
+        STATUS.E100.resultDesc,
+        moment().format("LT")
+      );
     }
 
     try {
@@ -121,19 +140,28 @@ const todoController = {
         return resData(
           STATUS.S200.result,
           STATUS.S200.resultDesc,
-          moment().format('LT')
+          moment().format("LT")
         );
       }
     } catch (e) {
       console.log(e.message);
-      return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+      return resData(
+        STATUS.E300.result,
+        STATUS.E300.resultDesc,
+        moment().format("LT")
+      );
     }
   },
 
+  //delete
   delete: async (req) => {
     const { id } = req.params; // url /로 들어오는것
     if (isEmpty(id)) {
-      return resData(STATUS.E100.result, STATUS.E100.resultDesc, moment().format('LT'));
+      return resData(
+        STATUS.E100.result,
+        STATUS.E100.resultDesc,
+        moment().format("LT")
+      );
     }
     const cnt = await getSelectOne(id);
     try {
@@ -141,7 +169,7 @@ const todoController = {
         return resData(
           STATUS.E100.result,
           STATUS.E100.resultDesc,
-          moment().format('LT')
+          moment().format("LT")
         );
       }
       const query = `DELETE FROM ${TABLE.TODO} WHERE id = ?;`;
@@ -151,46 +179,53 @@ const todoController = {
         return resData(
           STATUS.S200.result,
           STATUS.S200.resultDesc,
-          moment().format('LT')
+          moment().format("LT")
         );
       }
     } catch (e) {
       console.log(e.message);
-      return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+      return resData(
+        STATUS.E300.result,
+        STATUS.E300.resultDesc,
+        moment().format("LT")
+      );
     }
     return rows;
   },
 
   reset: async (req) => {
-    const { title, done } = req.body;
-    if (isEmpty(title) || isEmpty(done)) {
-      return resData(
-        STATUS.E100.result,
-         STATUS.E100.resultDesc,
-          moment().format('LT'),
-          { getReset }
-          );
-    }
     try {
-      const query = `INSERT INTO todo (title, done) VALUES (?,?)`;
-      const values = [title, done];
-      const [rows] = await db.execute(query, values);
-      if (rows.affectedRows == 1) {
+      const title = req.body.title;
+      const len = req.body.len || 100;
+      const done = req.body.done || "N";
+      const truncateSql = `TRUNCATE TABLE ${TABLE.TODO}`;
+      await db.execute(truncateSql);
+
+      // INSERT INTO vue.todo (mb_id,title,done) VALUES (0, 'title test','Y');
+      let query = `INSERT INTO todo (title, done) values `;
+      const arr = [];
+
+      for (let i = 1; i <= len; i++) {
+        arr.push(`('${title}_${i}','${done}')`);
+      }
+
+      query = query + arr.join(",");
+      const [rows] = await db.execute(query);
+      if (rows.affectedRows == len) {
         return resData(
           STATUS.S200.result,
           STATUS.S200.resultDesc,
-          moment().format('LT'),
+          moment().format("LT")
         );
       }
     } catch (e) {
       console.log(e.message);
-      return resData(STATUS.E300.result, STATUS.E300.resultDesc, moment().format('LT'));
+      return resData(
+        STATUS.E300.result,
+        STATUS.E300.resultDesc,
+        moment().format("LT")
+      );
     }
-
   },
-
-
-
 };
-
 module.exports = todoController;
