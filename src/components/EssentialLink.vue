@@ -1,10 +1,5 @@
 <template>
-  <q-item
-    clickable
-    tag="a"
-
-    :href="link"
-  >
+  <q-item clickable :to="link">
     <q-item-section
       v-if="icon"
       avatar

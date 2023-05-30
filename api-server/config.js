@@ -21,8 +21,9 @@ const development = {
     port:"3306",
     connectionLimit:20,
     connectTimeout: 5000,
-    SECRET_KEY: "$2a$12$U3fh66EhjEts.vUTORXno.DKg1b30h8Z26fZll8lHUoEKIsqKYLdK",
+
 },
+SECRET_KEY: "$2a$12$U3fh66EhjEts.vUTOREKIsqKYLdK",
 }
 
 module.exports = { production, development }

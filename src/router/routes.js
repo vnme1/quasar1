@@ -9,6 +9,9 @@ const routes = [
       { path: '/shop', component: () => import('pages/ShoppingList.vue') },
       { path: '/music', component: () => import('pages/MyMusic.vue') },
       { path: '/todo', component: () => import('pages/Todo.vue') },
+      { path: "/dbtodo", component: () => import("pages/DbTodo.vue") },
+      { path: "/signin", component: () => import("layouts/SignIn.vue")},
+      { path: "/login", component: () => import("layouts/Login.vue")},
 
     ]
   },

@@ -4,10 +4,6 @@ const lib = {
     return { status, message, resDate, data };
   },
 
-  getIp(req) {
-    return req.ip.replace("::1", "127.0.0.1");
-  },
-
   //빈 값 체크
   isEmpty(value) {
     if (
@@ -20,6 +16,10 @@ const lib = {
     } else {
       return false; // 값 있음
     }
+  },
+
+  getIp(req) {
+    return req.ip.replace("::1", "127.0.0.1");
   },
 };
 
